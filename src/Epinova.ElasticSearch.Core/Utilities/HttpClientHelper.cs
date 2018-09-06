@@ -55,7 +55,7 @@ namespace Epinova.ElasticSearch.Core.Utilities
             try
             {
                 HttpResponseMessage response = Client
-                    .PutAsync(uri, new ByteArrayContent(data))
+                    .PutAsync(uri, JsonContent(data))
                     .ConfigureAwait(false)
                     .GetAwaiter()
                     .GetResult();
@@ -80,7 +80,7 @@ namespace Epinova.ElasticSearch.Core.Utilities
 
             try
             {
-                HttpResponseMessage response = await Client.PutAsync(uri, new ByteArrayContent(data), cancellationToken).ConfigureAwait(false);
+                HttpResponseMessage response = await Client.PutAsync(uri, JsonContent(data), cancellationToken).ConfigureAwait(false);
                 LogErrorIfNotSuccess(response);
             }
             catch (Exception ex)
@@ -97,7 +97,7 @@ namespace Epinova.ElasticSearch.Core.Utilities
             try
             {
                 HttpResponseMessage response = Client
-                    .PostAsync(uri, new ByteArrayContent(data))
+                    .PostAsync(uri, JsonContent(data))
                     .ConfigureAwait(false)
                     .GetAwaiter()
                     .GetResult();
@@ -124,7 +124,7 @@ namespace Epinova.ElasticSearch.Core.Utilities
 
             try
             {
-                HttpResponseMessage response = await Client.PostAsync(uri, new ByteArrayContent(data), cancellationToken).ConfigureAwait(false);
+                HttpResponseMessage response = await Client.PostAsync(uri, JsonContent(data), cancellationToken).ConfigureAwait(false);
                 LogErrorIfNotSuccess(response);
                 return await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
             }
@@ -256,6 +256,13 @@ namespace Epinova.ElasticSearch.Core.Utilities
                     Logger.Error("Could not read error-response");
                 }
             }
+        }
+
+        private static ByteArrayContent JsonContent(byte[] data)
+        {
+            var content = new ByteArrayContent(data);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            return content;
         }
     }
 }
