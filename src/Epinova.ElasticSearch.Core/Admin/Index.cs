@@ -125,6 +125,7 @@ namespace Epinova.ElasticSearch.Core.Admin
             _indexing.CreateIndex(_name);
 
             CreateStandardSettings();
+            CreateAttachmentPipeline();
 
             _indexing.Close(_name);
 
@@ -206,6 +207,18 @@ namespace Epinova.ElasticSearch.Core.Admin
             var uri = _indexing.GetUri(_name, "_settings");
 
             Logger.Information($"Creating standard settings. Language: {_name}");
+            Logger.Information(JToken.Parse(json).ToString(Formatting.Indented));
+
+            HttpClientHelper.Put(uri, data);
+        }
+
+        private void CreateAttachmentPipeline()
+        {
+            string json = Serialization.Serialize(Pipelines.Attachment.Definition);
+            byte[] data = Encoding.UTF8.GetBytes(json);
+            var uri = new Uri($"{_settings.Host}/_ingest/pipeline/{Pipelines.Attachment.Name}");
+
+            Logger.Information("Creating Attachment Pipeline");
             Logger.Information(JToken.Parse(json).ToString(Formatting.Indented));
 
             HttpClientHelper.Put(uri, data);

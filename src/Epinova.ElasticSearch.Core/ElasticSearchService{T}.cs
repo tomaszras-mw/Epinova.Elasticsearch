@@ -304,29 +304,28 @@ namespace Epinova.ElasticSearch.Core
         }
 
 
-        public SearchResult GetResults(params string[] fields)
+        public SearchResult GetResults(bool enableHighlighting = true, bool enableDidYouMean = true, params string[] fields)
         {
             QuerySetup query = CreateQuery(fields);
+            query.EnableDidYouMean = enableDidYouMean;
+            query.EnableHighlighting = enableHighlighting;
 
             return GetResults(query);
         }
 
-
-        public virtual SearchResult GetResults(int from, int size, params string[] fields)
+        public virtual SearchResult GetResults(int from, int size, bool enableHighlighting = true, bool enableDidYouMean = true, params string[] fields)
         {
             FromValue = from;
             SizeValue = size;
 
-            return GetResults(fields);
+            return GetResults(enableHighlighting, enableDidYouMean, fields);
         }
-
-
+        
         public async Task<SearchResult> GetResultsAsync(params string[] fields)
         {
             return await GetResultsAsync(CancellationToken.None, fields);
         }
-
-
+        
         public async Task<SearchResult> GetResultsAsync(CancellationToken cancellationToken, params string[] fields)
         {
             QuerySetup query = CreateQuery(fields);

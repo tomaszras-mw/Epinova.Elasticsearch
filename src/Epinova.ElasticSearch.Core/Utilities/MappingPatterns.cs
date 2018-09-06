@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Epinova.ElasticSearch.Core.Enums;
 using Epinova.ElasticSearch.Core.Models;
 using Epinova.ElasticSearch.Core.Models.Mapping;
@@ -85,19 +85,6 @@ namespace Epinova.ElasticSearch.Core.Utilities
                 _all = new {analyzer = "snowball"},
                 properties = new
                 {
-                    Attachment = new
-                    {
-                        type = StringType,
-                        fields = new
-                        {
-                            content = new
-                            {
-                                type = StringType,
-                                term_vector = "with_positions_offsets",
-                                store = true
-                            }
-                        }
-                    },
                     Id = new { type = "long", include_in_all = false },
                     _bestbets = new {
                         type = StringType,
@@ -109,7 +96,32 @@ namespace Epinova.ElasticSearch.Core.Utilities
                     DidYouMean = new { type = StringType, analyzer = languageName + "_suggest", fields = new { raw = new { analyzer = "raw", type = StringType } } },
                     Suggest = SuggestMapping,
                     Type = new { type = StringType, analyzer = "raw" },
-                    Types = new { type = StringType, analyzer = "raw" }
+                    Types = new { type = StringType, analyzer = "raw" },
+                    _attachmentdata = new { type = StringType },
+                    attachment = GetAttachmentMapping(languageName)
+                }
+            };
+        }
+
+        private static dynamic GetAttachmentMapping(string languageName)
+        {
+            return new
+            {
+                properties = new
+                {
+                    content = new
+                    {
+                        type = StringType,
+                        analyzer = languageName,
+                        fields = new
+                        {
+                            keyword = new
+                            {
+                                type = "keyword",
+                                ignore_above = 256
+                            }
+                        }
+                    }
                 }
             };
         }
